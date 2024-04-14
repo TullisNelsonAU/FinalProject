@@ -1,4 +1,4 @@
-
+# from hw
 def decrypt_shift_cipher(ciphertext, shift):
     decrypted_text = ""
     for char in ciphertext:
