@@ -73,8 +73,6 @@ def brute_force(ciphertext):
     best_decryption_score = 0
     for key_length in range(1, 5):
         for possible_key in generate_keys(key_length):
-            if possible_key == 'keyx':
-                print(vigenere_cipher(ciphertext, possible_key, 'decrypt'))
             decryption = vigenere_cipher(ciphertext, possible_key, 'decrypt')
             score = calculate_score(decryption)
             # Update if score is better (even for single words)
@@ -88,27 +86,33 @@ def brute_force(ciphertext):
 
 
 # Get user input for mode
-while True:
-    mode = input(
-        "Enter mode ('encrypt', 'decrypt', or 'decrypt_with_key'): ").lower()
-    if mode in ['encrypt', 'decrypt', 'decrypt_with_key']:
-        break
-    else:
-        print("Invalid mode. Please enter 'encrypt', 'decrypt', or 'decrypt_with_key'.")
+def main():
+    while True:
+        mode = input(
+            "Enter mode ('encrypt', 'decrypt', or 'decrypt_with_key'): ").lower()
+        if mode in ['encrypt', 'decrypt', 'decrypt_with_key']:
+            break
+        else:
+            print(
+                "Invalid mode. Please enter 'encrypt', 'decrypt', or 'decrypt_with_key'.")
 
-# Get user input for text and keyword (if encrypting or decrypting with key)
-text = input("Enter text: ").lower()
-if mode == 'encrypt':
-    keyword = input("Enter keyword (max length 4): ").lower()
-    result = vigenere_cipher(text, keyword, mode)
-    print("Ciphertext:", result)
-elif mode == 'decrypt':
-    result = brute_force(text)
-    if result:
-        print("Possible decryption:", result)
-    else:
-        print("Unable to decrypt with high confidence.")
-else:  # decrypt_with_key mode
-    keyword = input("Enter key to use for decryption: ").lower()
-    result = vigenere_cipher(text, keyword, 'decrypt')  # Use decrypt mode
-    print("Decryption:", result)
+    # Get user input for text and keyword (if encrypting or decrypting with key)
+    text = input("Enter text: ").lower()
+    if mode == 'encrypt':
+        keyword = input("Enter keyword (max length 4): ").lower()
+        result = vigenere_cipher(text, keyword, mode)
+        print("Ciphertext:", result)
+    elif mode == 'decrypt':
+        result = brute_force(text)
+        if result:
+            print("Possible decryption:", result)
+        else:
+            print("Unable to decrypt with high confidence.")
+    else:  # decrypt_with_key mode
+        keyword = input("Enter key to use for decryption: ").lower()
+        result = vigenere_cipher(text, keyword, 'decrypt')  # Use decrypt mode
+        print("Decryption:", result)
+
+
+if __name__ == '__main__':
+    main()
