@@ -1,5 +1,6 @@
 
 import shiftCipher
+import railfenceCipher
 
 
 def display_menu():
@@ -10,7 +11,7 @@ def display_menu():
     print("3. Rail Fence Cipher")
     print("4. Hill Cipher")
     print("5. Affine Cipher")
-    print("6. Affine Cipher")
+    print("6. Playfair Cipher")
     print("7. Help")
     print("8. Exit")
 
@@ -20,10 +21,10 @@ def get_user_choice():
     while True:
         try:
             choice = int(input("Enter your choice: "))
-            if choice in range(1, 8):  # Validate choice
+            if choice in range(1, 9):  # Validate choice
                 return choice
             else:
-                print("Invalid choice. Please select a number between 1 and 7.")
+                print("Invalid choice. Please select a number between 1 and 8.")
         except ValueError:
             print("Invalid input. Please enter a number.")
 
@@ -58,13 +59,7 @@ def main():
                 pass
 
         elif choice == 3:
-            operation = get_operation_choice()
-            if operation == 'E':
-                # *** Call your Rail Fence Cipher encryption method here ***
-                pass
-            else:
-                # *** Call your Rail Fence Cipher decryption method here ***
-                pass
+            railfenceCipher.main()
 
         elif choice == 4:
             operation = get_operation_choice()

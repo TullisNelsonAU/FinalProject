@@ -102,7 +102,7 @@ def choose_best_decryption(encrypted_text, max_key_level):
 
     return best_decryption
 
-if __name__ == "__main__":
+def main():
     cipher = RailFence()
 
     while True:
@@ -124,12 +124,14 @@ if __name__ == "__main__":
 
         elif choice == '3':
             encrypted_text = input("Enter the encrypted text: ")
-            max_key_level = 15
-
+            max_key_level = 15  # You can make this an input too
             best_decryption = choose_best_decryption(encrypted_text, max_key_level)
             print("\nMost likely decryption:")
             print(best_decryption)
 
         else:
             break
+
+if __name__ == "__main__":
+    main()
 
