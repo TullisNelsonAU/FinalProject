@@ -102,9 +102,31 @@ def crack_cipher(ciphertext):
     return best_key, decrypt(ciphertext, *best_key)
 
 
-# **Example Usage**
-ciphertext = "gwzd zd gwn uibzognsg rq gwn bqqzon hzuwna"
-key, plaintext = crack_cipher(ciphertext)
+def main():
+    choice = input(
+        "Do you want to encrypt (E), decrypt (D), or decrypt  with key (DK)? ").upper()
 
-print("Cracked Key:", key)
-print("Decrypted Plaintext:", plaintext)
+    if choice == 'E':
+        plaintext = input("Enter plaintext: ")
+        key1 = int(input("Enter Key 1: "))
+        key2 = int(input("Enter Key 2: "))
+        print(encrypt(plaintext, key1, key2))
+
+    elif choice == 'D':
+        ciphertext = input("Enter ciphertext: ")
+        key, plaintext = crack_cipher(ciphertext)
+        print("Cracked Key:", key)
+        print("Decrypted Plaintext:", plaintext)
+
+    elif choice == 'DK':
+        ciphertext = input("Enter ciphertext: ")
+        key1 = int(input("Enter key1: "))
+        key2 = int(input("Enter key2: "))
+        print("Decrypted Ciphertext:", decrypt(ciphertext, key1, key2))
+
+    else:
+        print("Invalid choice.")
+
+
+if __name__ == "__main__":
+    main()

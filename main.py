@@ -3,6 +3,8 @@ import shiftCipher
 import RailFenceCipher
 import columnartranspositioncCipher
 import playfairCipher
+import affineCipher
+import vigenereCipher
 
 
 def display_menu():
@@ -52,27 +54,16 @@ def main():
             shiftCipher.main()
 
         elif choice == 2:
-            operation = get_operation_choice()
-            if operation == 'E':
-                # *** Call your Vigenère Cipher encryption method here ***
-                pass
-            else:
-                # *** Call your Vigenère Cipher decryption method here ***
-                pass
+            vigenereCipher.main()
 
         elif choice == 3:
             RailFenceCipher.main()
 
         elif choice == 4:
             columnartranspositioncCipher.main()
+
         elif choice == 5:
-            operation = get_operation_choice()
-            if operation == 'E':
-                # *** Call your Affine Cipher encryption method here ***
-                pass
-            else:
-                # *** Call your Affine Cipher decryption method here ***
-                pass
+            affineCipher.main()
 
         elif choice == 6:
             playfairCipher.main()
