@@ -89,26 +89,21 @@ def brute_force(ciphertext):
 
 # Get user input for mode
 while True:
-    mode = input(
-        "Enter mode ('encrypt', 'decrypt', or 'decrypt_with_key'): ").lower()
-    if mode in ['encrypt', 'decrypt', 'decrypt_with_key']:
+    mode = input("Enter mode ('encrypt' or 'decrypt'): ").lower()
+    if mode in ['encrypt', 'decrypt']:
         break
     else:
-        print("Invalid mode. Please enter 'encrypt', 'decrypt', or 'decrypt_with_key'.")
+        print("Invalid mode. Please enter 'encrypt' or 'decrypt'.")
 
-# Get user input for text and keyword (if encrypting or decrypting with key)
+# Get user input for text and keyword (if encrypting)
 text = input("Enter text: ").lower()
 if mode == 'encrypt':
     keyword = input("Enter keyword (max length 4): ").lower()
     result = vigenere_cipher(text, keyword, mode)
     print("Ciphertext:", result)
-elif mode == 'decrypt':
+else:
     result = brute_force(text)
     if result:
         print("Possible decryption:", result)
     else:
         print("Unable to decrypt with high confidence.")
-else:  # decrypt_with_key mode
-    keyword = input("Enter key to use for decryption: ").lower()
-    result = vigenere_cipher(text, keyword, 'decrypt')  # Use decrypt mode
-    print("Decryption:", result)
