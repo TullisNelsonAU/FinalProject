@@ -2,12 +2,26 @@
 
 import string
 import nltk
+import re 
 from nltk.corpus import words
 
 import itertools
 
 nltk.download('words')
 ENGLISH_WORDS = set(words.words())
+
+
+import nltk
+nltk.download('brown') 
+from nltk.corpus import brown
+from nltk import bigrams
+from collections import Counter
+
+def clean_text(text):
+    """Cleans text for bigram analysis."""
+    text = re.sub(r"[^\w\s]", "", text)  # Remove non-word, non-whitespace chars
+    text = re.sub(r"\s+", " ", text)  # Normalize spaces 
+    return text.lower()
 
 
 def generate_key_square(key):
@@ -52,6 +66,10 @@ def locate_letter(matrix, letter):
         for col in range(5):
             if matrix[row][col] == letter:
                 return row, col
+
+    # If the letter is not found:
+    raise ValueError(f"Letter '{letter}' not found in the key square.")  
+
 
 
 def playfair_encrypt(plaintext, key_square):
@@ -98,6 +116,15 @@ def calculate_score(text):
             score += len(word) 
     return score
 
+def score_text_bigrams(text, bigram_counts):
+    score = 0
+    text_bigrams = bigrams(text.lower().split())  # Convert text to lowercase 
+    for bigram in text_bigrams:
+        if bigram.lower() in bigram_counts:  # Check lowercase bigrams
+            score += bigram_counts[bigram.lower()] 
+    return score
+
+
 
 def choose_best_decryption(ciphertext, key):
     """Attempts decryption with different key rotations, chooses the best, and shows progress."""
@@ -107,7 +134,7 @@ def choose_best_decryption(ciphertext, key):
     for i in range(len(key)):
         possible_key = key[i:] + key[:i]
         decryption = playfair_decrypt(ciphertext, generate_key_square(possible_key))
-        score = calculate_score(decryption)
+        score = score_text_bigrams(decryption.lower(), bigram_counts)  # Use bigram scoring
 
         print(f"Key Rotation: {i}, Key: {possible_key}, Decryption: {decryption} (Score: {score})")
 
@@ -119,12 +146,13 @@ def choose_best_decryption(ciphertext, key):
     print(best_decryption)
 
 
+
 def exhaustive_crack(ciphertext, max_key_length=15):
     """Attempts to crack the ciphertext by trying all keys and rotations up to a certain length."""
     best_decryption = None
     best_decryption_score = -1
 
-    ciphertext = ciphertext.upper().replace("J", "I")
+    ciphertext = ciphertext.lower().replace("J", "I")
     ciphertext = ''.join(c for c in ciphertext if c.isalpha())
 
     for key_length in range(1, max_key_length + 1):
@@ -134,8 +162,7 @@ def exhaustive_crack(ciphertext, max_key_length=15):
             for i in range(len(key)):
                 possible_key = key[i:] + key[:i]
                 decryption = playfair_decrypt(ciphertext, generate_key_square(possible_key))
-                
-                score = calculate_score(decryption.lower()) 
+                score = score_text_bigrams(decryption.lower(), bigram_counts)  # Use the bigram scorer
 
                 print(f"Key Length: {key_length}, Key: {possible_key}, Decryption: {decryption} (Score: {score})")
 
@@ -156,7 +183,7 @@ def generate_all_keys(key_length):
 
 
 
-if __name__ == "__main__":
+def main():
     while True:
         print("\nPlayfair Cipher")
         print("-----------------")
@@ -172,6 +199,7 @@ if __name__ == "__main__":
 
         elif choice == '2':
             ciphertext = input("Enter the ciphertext: ")
+            ciphertext = ciphertext.lower()  # Convert to lowercase
             key = input("Enter the key: ")
             key_square = generate_key_square(key)
             plaintext = playfair_decrypt(ciphertext, key_square)
@@ -188,3 +216,12 @@ if __name__ == "__main__":
         else:
             print("Invalid choice.")
 
+
+if __name__ == "__main__":
+    # Pre-process and calculate bigram counts (do this once at the beginning)
+    all_words = [clean_text(word) for word in brown.words()]
+    bigram_list = list(bigrams(all_words))
+    bigram_counts = Counter(bigram_list)
+
+    # Start the main program
+    main() 

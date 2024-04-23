@@ -1,6 +1,8 @@
 
 import shiftCipher
 import railfenceCipher
+import columnartranspositioncCipher
+import playfairCipher
 
 
 def display_menu():
@@ -62,14 +64,7 @@ def main():
             railfenceCipher.main()
 
         elif choice == 4:
-            operation = get_operation_choice()
-            if operation == 'E':
-                # *** Call your Hill Cipher encryption method here ***
-                pass
-            else:
-                # *** Call your Hill Cipher decryption method here ***
-                pass
-
+            columnartranspositioncCipher.main()
         elif choice == 5:
             operation = get_operation_choice()
             if operation == 'E':
@@ -80,13 +75,7 @@ def main():
                 pass
 
         elif choice == 6:
-            operation = get_operation_choice()
-            if operation == 'E':
-                # *** Call your Playfair Cipher encryption method here ***
-                pass
-            else:
-                # *** Call your Playfair Cipher decryption method here ***
-                pass
+            playfairCipher.main()
 
         elif choice == 7:
 
