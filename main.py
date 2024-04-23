@@ -11,7 +11,7 @@ def display_menu():
     print("1. Shift Cipher")
     print("2. Vigenère Cipher")
     print("3. Rail Fence Cipher")
-    print("4. Hill Cipher")
+    print("4. Columnar Transposition Cipher")
     print("5. Affine Cipher")
     print("6. Playfair Cipher")
     print("7. Help")
