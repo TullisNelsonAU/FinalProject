@@ -68,11 +68,18 @@ class RailFence:
 
 
 def calculate_score(text):
-    """Calculates a score reflecting how likely 'text' is English using word frequencies."""
+    """Calculates a score reflecting how likely 'text' is English.
+
+    Args:
+        text: The text to evaluate.
+
+    Returns:
+        A score representing how "English-like" the text seems.
+    """
     score = 0
     for word in text.split():
         if word.lower() in ENGLISH_WORDS:
-            score += len(word)  
+            score += len(word)  # Longer words get higher weight
     return score
 
 def choose_best_decryption(encrypted_text, max_key_level):
