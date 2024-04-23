@@ -1,6 +1,6 @@
 
 import shiftCipher
-import railfenceCipher
+import RailFenceCipher
 import columnartranspositioncCipher
 import playfairCipher
 
@@ -61,7 +61,7 @@ def main():
                 pass
 
         elif choice == 3:
-            railfenceCipher.main()
+            RailFenceCipher.main()
 
         elif choice == 4:
             columnartranspositioncCipher.main()
