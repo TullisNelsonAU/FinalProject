@@ -1,6 +1,6 @@
 
 import shiftCipher
-import RailFenceCipher
+import railfenceCipher
 import columnartranspositioncCipher
 import playfairCipher
 import affineCipher
@@ -57,7 +57,7 @@ def main():
             vigenereCipher.main()
 
         elif choice == 3:
-            RailFenceCipher.main()
+            railfenceCipher.main()
 
         elif choice == 4:
             columnartranspositioncCipher.main()
