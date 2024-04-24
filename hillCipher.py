@@ -1,27 +1,33 @@
 import numpy as np
+import math
 # curently not working
+
+
+import math
 
 
 def get_key_matrix(key):
     """Converts a key string into a square matrix for Hill Cipher."""
-
     key = key.upper().replace(" ", "")  # Prepare the key
-    key_size = int(np.sqrt(len(key)))
+    key_length = len(key)
+    key_size = int(math.sqrt(key_length))
 
-    det = int(np.linalg.det(key_matrix))
-    if math.gcd(det, 26) != 1:
-        raise ValueError("Invalid key. Key matrix is not invertible.")
-
-    # Check for valid key size (must be perfect square)
-    if key_size * key_size != len(key):
+    # Check if the key length is a perfect square
+    if key_size * key_size != key_length:
         raise ValueError(
-            "Invalid key. Key length must be a perfect square (e.g., 4, 9, 16).")
+            "Invalid key length. Key length must be a perfect square.")
 
     # Create the key matrix and fill with characters
     key_matrix = np.zeros((key_size, key_size), dtype=int)
     for i, char in enumerate(key):
         key_matrix[i // key_size, i %
                    key_size] = ord(char) - 65  # Convert to 0-25 index
+
+    # Calculate the determinant of the key matrix
+    det = int(np.linalg.det(key_matrix))
+
+    if math.gcd(det, 26) != 1:
+        raise ValueError("Invalid key. Key matrix is not invertible.")
 
     return key_matrix
 

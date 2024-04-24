@@ -1,11 +1,12 @@
 
+from nltk.corpus import words
 import random
 import string
-import nltk  
-nltk.download('words') 
+import nltk
+nltk.download('words')
 
-from nltk.corpus import words
-ENGLISH_WORDS = set(words.words()) 
+ENGLISH_WORDS = set(words.words())
+
 
 class RailFence:
     def __init__(self):
@@ -17,13 +18,13 @@ class RailFence:
         row = key
         check = False
         j = 0
-        rail = [['*' for _ in range(col)] for _ in range(row)]  
+        rail = [['*' for _ in range(col)] for _ in range(row)]
 
         for i in range(col):
             if j == 0 or j == key - 1:
                 check = not check
-            rail[j][i] = plain_text[i] 
-            j += 1 if check else -1 
+            rail[j][i] = plain_text[i]
+            j += 1 if check else -1
 
         print("Rail of encryption:")
         for i in range(row):
@@ -32,7 +33,7 @@ class RailFence:
                 if ch != '*':
                     encrypted_text += ch
                 print(ch, end=" ")
-            print() 
+            print()
 
         return encrypted_text
 
@@ -42,27 +43,27 @@ class RailFence:
         row = key
         check = False
         j = 0
-        rail = [['*' for _ in range(col)] for _ in range(row)] 
+        rail = [['*' for _ in range(col)] for _ in range(row)]
 
         for i in range(col):
             if j == 0 or j == key - 1:
                 check = not check
-            rail[j][i] = '#' 
-            j += 1 if check else -1 
-            
+            rail[j][i] = '#'
+            j += 1 if check else -1
+
         index = 0
         for i in range(row):
             for k in range(col):
-                if rail[i][k] == '#' and index < col: 
+                if rail[i][k] == '#' and index < col:
                     rail[i][k] = encrypted_text[index]
                     index += 1
-                
+
         j = 0
         check = False
         for i in range(col):
             if j == 0 or j == key - 1:
                 check = not check
-            decrypted_text += rail[j][i] 
+            decrypted_text += rail[j][i]
             j += 1 if check else -1
         return decrypted_text
 
@@ -72,8 +73,9 @@ def calculate_score(text):
     score = 0
     for word in text.split():
         if word.lower() in ENGLISH_WORDS:
-            score += len(word)  
+            score += len(word)
     return score
+
 
 def choose_best_decryption(encrypted_text, max_key_level):
     """Performs brute-force decryption and selects the most likely result.
@@ -102,13 +104,44 @@ def choose_best_decryption(encrypted_text, max_key_level):
 
     return best_decryption
 
+
+def choose_best_decryption2(encrypted_text, max_key_level):
+    """Performs brute-force decryption and selects the most likely result.
+
+    Args:
+        encrypted_text: The text to decrypt.
+        max_key_level: The maximum key level to attempt.
+
+    Returns:
+        The most probable plaintext decryption.
+    """
+    cipher = RailFence()  # Create a cipher object
+    best_decryption = None
+    best_decryption_score = 0
+
+    # print("\nTrying different key levels and offsets...\n")
+    for key in range(2, max_key_level + 1):
+        decryption = cipher.decrypt(encrypted_text, key)
+        score = calculate_score(decryption)
+
+        if not best_decryption or score > best_decryption_score:
+            best_decryption = decryption
+            best_decryption_score = score
+            best_key = key
+
+        # print(f"Key: {key} -> {decryption} (Score: {score})")
+
+    return best_decryption, best_key
+
+
 def main():
     cipher = RailFence()
 
     while True:
         print("\nRail Fence Cipher")
         print("-----------------")
-        choice = input("(1) Encrypt\n(2) Decrypt\n(3) Brute-Force Decrypt\n(4) Exit\n\nEnter your choice: ")
+        choice = input(
+            "(1) Encrypt\n(2) Decrypt\n(3) Brute-Force Decrypt\n(4) Exit\n\nEnter your choice: ")
 
         if choice == '1':
             plain_text = input("Enter the plain text: ")
@@ -125,13 +158,14 @@ def main():
         elif choice == '3':
             encrypted_text = input("Enter the encrypted text: ")
             max_key_level = 15  # You can make this an input too
-            best_decryption = choose_best_decryption(encrypted_text, max_key_level)
+            best_decryption = choose_best_decryption(
+                encrypted_text, max_key_level)
             print("\nMost likely decryption:")
             print(best_decryption)
 
         else:
             break
 
+
 if __name__ == "__main__":
     main()
-
