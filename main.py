@@ -64,8 +64,9 @@ def main():
         if choice == 0:
             print("----- Cipher Detection -----")
             ciphertext = input("Enter your ciphertext: ")
-            detected_cipher = detect_cipher(ciphertext)
+            detected_cipher, key_used = detect_cipher(ciphertext)
             print("Detected cipher:", detected_cipher)
+            print("Key used:", key_used)
 
         elif choice == 1:
             shiftCipher.main()
@@ -105,17 +106,18 @@ def detect_and_score(ciphertext, cipher_name, cipher_module):
         score = calculate_score(plaintext)
         # print("DEBUG:", cipher_name, "about to store result - Score:", score)
         with results_lock:
-            results[cipher_name] = (cipher_name, score, plaintext)
-        return cipher_name, score, plaintext
+            results[cipher_name] = (cipher_name, score, plaintext, key)
+        return cipher_name, score, plaintext, key
 
     elif cipher_name == "vigenere":
         # Vigenere Cipher Logic
-        best_plaintext = vigenereCipher.brute_force(ciphertext)
+        best_plaintext, key_used = vigenereCipher.brute_force2(ciphertext)
         score = vigenereCipher.calculate_score(best_plaintext)
         # print("DEBUG:", cipher_name, "about to store result - Score:", score)
         with results_lock:
-            results[cipher_name] = (cipher_name, score, best_plaintext)
-        return cipher_name, score, best_plaintext
+            results[cipher_name] = (
+                cipher_name, score, best_plaintext, key_used)
+        return cipher_name, score, best_plaintext, key_used
 
     elif cipher_name == "shift":
         # Shift Cipher Logic
@@ -124,8 +126,9 @@ def detect_and_score(ciphertext, cipher_name, cipher_module):
         score = calculate_score(best_plaintext)
         # print("DEBUG:", cipher_name, "about to store result - Score:", score)
         with results_lock:
-            results[cipher_name] = (cipher_name, score, best_plaintext)
-        return cipher_name, score, best_plaintext
+            results[cipher_name] = (
+                cipher_name, score, best_plaintext, best_shift)
+        return cipher_name, score, best_plaintext, best_shift
 
     else:
         # Handle errors or add more ciphers here
@@ -147,9 +150,9 @@ def detect_cipher(ciphertext):
     for thread in threads:
         thread.join()
 
-    best_cipher, best_score, _ = max(
+    best_cipher, best_score, _, key_used = max(
         results.values(), key=lambda item: item[1])
-    return best_cipher
+    return best_cipher, key_used
 
 
 def calculate_score(text):
