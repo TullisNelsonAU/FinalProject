@@ -85,7 +85,25 @@ def brute_force(ciphertext):
     return best_decryption
 
 
+def brute_force2(ciphertext):
+    """Attempts to crack a Vigenère cipher using brute force."""
+    best_decryption = None
+    best_decryption_score = 0
+    for key_length in range(1, 5):
+        for possible_key in generate_keys(key_length):
+            decryption = vigenere_cipher(ciphertext, possible_key, 'decrypt')
+            score = calculate_score(decryption)
+            # Update if score is better (even for single words)
+            if score > best_decryption_score:
+                best_decryption = decryption
+                best_decryption_score = score
+                key_used = possible_key
+
+    return best_decryption, key_used
+
 # Get user input for mode
+
+
 def main():
     while True:
         mode = input(
