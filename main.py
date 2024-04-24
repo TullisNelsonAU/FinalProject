@@ -25,7 +25,7 @@ def display_menu():
     print("1. Shift Cipher")
     print("2. Vigenère Cipher")
     print("3. Rail Fence Cipher")
-    print("4. Hill Cipher")
+    print("4. Columnar Transposition Cipher")
     print("5. Affine Cipher")
     print("6. Playfair Cipher")
     print("7. Help")
@@ -64,8 +64,9 @@ def main():
         if choice == 0:
             print("----- Cipher Detection -----")
             ciphertext = input("Enter your ciphertext: ")
-            detected_cipher, key_used = detect_cipher(ciphertext)
+            detected_cipher, plaintext, key_used = detect_cipher(ciphertext)
             print("Detected cipher:", detected_cipher)
+            print("Plaintext:", plaintext)
             print("Key used:", key_used)
 
         elif choice == 1:
@@ -109,6 +110,15 @@ def detect_and_score(ciphertext, cipher_name, cipher_module):
             results[cipher_name] = (cipher_name, score, plaintext, key)
         return cipher_name, score, plaintext, key
 
+    elif cipher_name == "rail_fence":
+        plaintext, key = RailFenceCipher.choose_best_decryption2(
+            ciphertext, 15)
+        score = calculate_score(plaintext)
+        # print("DEBUG:", cipher_name, "about to store result - Score:", score)
+        with results_lock:
+            results[cipher_name] = (cipher_name, score, plaintext, key)
+        return cipher_name, score, plaintext, key
+
     elif cipher_name == "vigenere":
         # Vigenere Cipher Logic
         best_plaintext, key_used = vigenereCipher.brute_force2(ciphertext)
@@ -141,7 +151,8 @@ def detect_cipher(ciphertext):
 
     for cipher_name, cipher_module in [("shift", shiftCipher),
                                        ("affine", affineCipher),
-                                       ("vigenere", vigenereCipher)]:
+                                       ("vigenere", vigenereCipher),
+                                       ("rail_fence", RailFenceCipher)]:
         thread = threading.Thread(target=detect_and_score, args=(
             ciphertext, cipher_name, cipher_module))
         threads.append(thread)
@@ -150,9 +161,9 @@ def detect_cipher(ciphertext):
     for thread in threads:
         thread.join()
 
-    best_cipher, best_score, _, key_used = max(
+    best_cipher, best_score, best_plaintext, key_used = max(
         results.values(), key=lambda item: item[1])
-    return best_cipher, key_used
+    return best_cipher, best_plaintext, key_used
 
 
 def calculate_score(text):
