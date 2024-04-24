@@ -2,8 +2,8 @@
 import time
 import affineCipher  # Import your other cipher modules similarly
 import shiftCipher
-import RailFenceCipher
-# import columnartranspositioncCipher
+import railfenceCipher
+import columnartranspositioncCipher
 import playfairCipher
 import affineCipher
 import vigenereCipher
@@ -71,7 +71,7 @@ def main():
             vigenereCipher.main()
 
         elif choice == 3:
-            RailFenceCipher.main()
+            railfenceCipher.main()
 
         elif choice == 4:
             # columnartranspositioncCipher.main()
