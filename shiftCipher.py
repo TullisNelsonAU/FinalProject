@@ -43,6 +43,26 @@ def find_likely_decryption(ciphertext, word_list):
         print("No likely decryption found.")
 
 
+def find_likely_decryption_2(ciphertext, word_list):
+    """Attempts to find the correct decryption of a Shift Cipher ciphertext."""
+    best_shift = None
+    max_word_match = 0
+
+    for shift in range(26):
+        decrypted_text = decrypt_shift_cipher(ciphertext, shift)
+        words = decrypted_text.split()
+
+        num_real_words = sum(word.lower() in word_list for word in words)
+        if num_real_words > max_word_match:
+            max_word_match = num_real_words
+            best_shift = shift
+
+    if best_shift is not None:
+        return decrypt_shift_cipher(ciphertext, best_shift), best_shift
+    else:
+        return None
+
+
 def main():
     choice = input("Do you want to encrypt (E) or decrypt (D)? ").upper()
 

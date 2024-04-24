@@ -2,14 +2,17 @@
 import time
 import affineCipher  # Import your other cipher modules similarly
 import shiftCipher
-import railfenceCipher
-import columnartranspositioncCipher
+import RailFenceCipher
+# import columnartranspositioncCipher still failing when importing "no module pycld2"
 import playfairCipher
 import affineCipher
 import vigenereCipher
 import threading
 from nltk.corpus import words
 import nltk
+
+results = {}  # Global variable for storing results
+results_lock = threading.Lock()  # Lock for synchronizing access to results
 nltk.download('words')  # Download words list if not already downloaded
 
 word_list = words.words()
@@ -71,7 +74,7 @@ def main():
             vigenereCipher.main()
 
         elif choice == 3:
-            railfenceCipher.main()
+            RailFenceCipher.main()
 
         elif choice == 4:
             # columnartranspositioncCipher.main()
@@ -95,27 +98,33 @@ def main():
 
 def detect_and_score(ciphertext, cipher_name, cipher_module):
     """Decrypts using a specific cipher and calculates a score."""
-
+    global results
     if cipher_name == "affine":
         # Affine Cipher Logic
         key, plaintext = affineCipher.crack_cipher(ciphertext)
         score = calculate_score(plaintext)
+        # print("DEBUG:", cipher_name, "about to store result - Score:", score)
+        with results_lock:
+            results[cipher_name] = (cipher_name, score, plaintext)
         return cipher_name, score, plaintext
 
     elif cipher_name == "vigenere":
         # Vigenere Cipher Logic
         best_plaintext = vigenereCipher.brute_force(ciphertext)
         score = vigenereCipher.calculate_score(best_plaintext)
+        # print("DEBUG:", cipher_name, "about to store result - Score:", score)
+        with results_lock:
+            results[cipher_name] = (cipher_name, score, best_plaintext)
         return cipher_name, score, best_plaintext
 
     elif cipher_name == "shift":
         # Shift Cipher Logic
-        best_plaintext = shiftCipher.find_likely_decryption(
+        best_plaintext, best_shift = shiftCipher.find_likely_decryption_2(
             ciphertext, word_list)
-        if best_plaintext is not None:
-            score = calculate_score(best_plaintext)
-        else:
-            score = 0
+        score = calculate_score(best_plaintext)
+        # print("DEBUG:", cipher_name, "about to store result - Score:", score)
+        with results_lock:
+            results[cipher_name] = (cipher_name, score, best_plaintext)
         return cipher_name, score, best_plaintext
 
     else:
@@ -125,6 +134,7 @@ def detect_and_score(ciphertext, cipher_name, cipher_module):
 
 def detect_cipher(ciphertext):
     threads = []
+    global results
 
     for cipher_name, cipher_module in [("shift", shiftCipher),
                                        ("affine", affineCipher),
@@ -137,8 +147,8 @@ def detect_cipher(ciphertext):
     for thread in threads:
         thread.join()
 
-    results = [thread.result for thread in threads]
-    best_cipher, best_score, _ = max(results, key=lambda item: item[1])
+    best_cipher, best_score, _ = max(
+        results.values(), key=lambda item: item[1])
     return best_cipher
 
 
