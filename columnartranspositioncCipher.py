@@ -1,234 +1,139 @@
-# import detectEnglish
-# from itertools import permutations
-
-# def isEnglish(message):
-#     """Checks if a message is likely English text."""
-#     return detectEnglish.isEnglish(message) 
-
-# def encrypt(plaintext, key, keep_spaces=False):  # Added keep_spaces parameter
-#     """Encrypts plaintext using a columnar transposition cipher with a given key."""
-#     if not keep_spaces:
-#         plaintext = plaintext.replace(" ", "")
-
-#     # Handle both integer and string keys
-#     if isinstance(key, int):
-#         key = str(key)  # Convert integer key to a string
-#     ciphertext = [''] * len(key)  
-
-#     col = 0
-#     for char in plaintext:
-#         ciphertext[col] += char
-#         col = (col + 1) % len(key)
-
-#     return ''.join(ciphertext)
+# import nltk
+# from pycld2 import detect
+# from itertools import permutations, combinations
+# import string
 
 
-# def decrypt(ciphertext, key, keep_spaces=False):  # Added keep_spaces parameter
-#     """Decrypts a columnar transposition cipher using a specific key."""
-#     order = sorted(range(len(key)), key=lambda k: key[k])
-#     numRows = (len(ciphertext) + len(key) - 1) // len(key)  
-#     numCols = len(key)
-#     numRowsPerCol = [numRows] * numCols 
+# def encrypt(plain_text, key):
+#     num_columns = len(key)
+#     num_rows = -(-len(plain_text) // num_columns)
+#     matrix = [[''] * num_columns for _ in range(num_rows)]
+#     for i, char in enumerate(plain_text):
+#         matrix[i // num_columns][i % num_columns] = char
+#     cipher_text = ''
+#     sorted_key = sorted(enumerate(key), key=lambda x: x[1])
+#     for index, _ in sorted_key:
+#         cipher_text += ''.join(row[index] for row in matrix if row[index] != '')
+#     return cipher_text
 
-#     # Distribute leftover characters into shorter columns first
-#     extra = len(ciphertext) % numCols  
-#     for i in range(extra): 
-#         numRowsPerCol[i] += 1  
+# def decrypt(cipher_text, key):
+#     num_columns = len(key)
+#     num_rows = -(-len(cipher_text) // num_columns)
+#     sorted_key = sorted(range(num_columns), key=lambda x: key[x])
+    
+#     # Calculate the number of characters in the last row
+#     last_row_length = len(cipher_text) % num_columns
+    
+#     plain_text = ''
+#     for row in range(num_rows):
+#         for col in sorted_key:
+#             # Calculate the index of the character in the cipher text
+#             index = col * num_rows + row
+#             # Check if the index is within the length of the cipher text
+#             if index < len(cipher_text):
+#                 plain_text += cipher_text[index]
+#             # If we are in the last row and there are empty spaces,
+#             # add them to the plain text
+#             elif row == num_rows - 1 and col >= num_columns - last_row_length:
+#                 plain_text += ' '
+    
+#     return plain_text
 
-#     col = 0
-#     decoded = [''] * len(ciphertext)  
-#     for index in range(len(ciphertext)):  
-#         row = index // numRowsPerCol[col]  
-#         pos = order[col] * numRowsPerCol[col] + row  
-#         decoded[pos] = ciphertext[index]  
-#         col = (col + 1) % numCols  
-
-#     return ''.join(decoded)
-
-
-
-# def crack(ciphertext):
-#   """Attempts to crack the columnar transposition cipher using a brute-force approach."""
-#   potential_solutions = []
-#   for keyLength in range(1, len(ciphertext) + 1):
-#     # Try all possible key permutations
-#     if keyLength > 1:
-#         for key in permutations(range(keyLength)):
-#         # Decrypt with the current key
-#             print("Current key:", key)
-#             plaintext = decrypt(ciphertext, keyLength)
-
-#             if isEnglish(plaintext):
-#                 return plaintext, keyLength 
-#     else:
-#         # Check if the decrypted text is likely English
-#         plaintext = decrypt(ciphertext, keyLength)
-#         if isEnglish(plaintext):
-#             potential_solutions.append((plaintext, keyLength)) 
-
-#   if potential_solutions:
-#     return min(potential_solutions, key=lambda x: isEnglish(x[0]))
-#   else:
-#     return None 
-#   # No key found
-#   return None, None
+ 
 
 # def main():
-#     while True:
-#         choice = input("Choose an option (e/d/c):\n"
-#                        "  e: Encrypt\n"
-#                        "  d: Decrypt\n"
-#                        "  c: Crack\n"
-#                        "  q: Quit\n"
-#                        "Enter your choice: ").lower()
-
-#         if choice == 'e':
-#             plaintext = input("Enter plaintext: ")
-#             key = int(input("Enter key (a number): "))
-#             ciphertext = encrypt(plaintext, key)
-#             print("Ciphertext:", ciphertext)
-
-#         elif choice == 'd':
-#             ciphertext = input("Enter ciphertext: ")
-#             key = int(input("Enter key (a number): "))
-#             plaintext = decrypt(ciphertext, key)
-#             print("Plaintext:", plaintext)
-
-#         elif choice == 'c':
-#             ciphertext = input("Enter ciphertext: ")
-#             result, key = crack(ciphertext)
-#             if result:
-#                 print("Most likely decrypted text:", result)
-#                 print("Key (Key Length):", key)
-#             else:
-#                 print("Unable to crack the cipher.")
-
-#         elif choice == 'q':
-#             break
-#         else:
-#             print("Invalid choice.")
+#     choice = input("Enter 'encrypt' or 'decrypt': ").strip().lower()
+#     if choice == 'e':
+#         plain_text = input("Enter the plain text: ").strip()
+#         key = input("Enter the key: ").strip()
+#         cipher_text = encrypt(plain_text, key)
+#         print("Encrypted text:", cipher_text)
+#     elif choice == 'd':
+#         cipher_text = input("Enter the cipher text: ").strip()
+#         key = input("Enter the key: ").strip()
+#         plain_text = decrypt(cipher_text, key)
+#         print("Decrypted text:", plain_text)
+#     else:
+#         print("Invalid choice.")
 
 # if __name__ == "__main__":
 #     main()
 
-
-
-
 import nltk
 from pycld2 import detect
-from itertools import permutations
+from itertools import permutations, combinations
+import string
 
-nltk.download('words') 
-from nltk.corpus import words
-ENGLISH_WORDS = set(words.words()) 
+def encrypt(plain_text, key):
+    num_columns = len(key)
+    num_rows = -(-len(plain_text) // num_columns)
+    matrix = [[''] * num_columns for _ in range(num_rows)]
+    for i, char in enumerate(plain_text):
+        matrix[i // num_columns][i % num_columns] = char
+    cipher_text = ''
+    sorted_key = sorted(enumerate(key), key=lambda x: x[1])
+    for index, _ in sorted_key:
+        cipher_text += ''.join(row[index] for row in matrix if row[index] != '')
+    return cipher_text
 
-def isEnglish(message):
-    """Checks if a message is likely English text."""
-    # Use pycld2's detection (reliable=True improves accuracy)
-    _, _, details = detect(message, bestEffort=True) 
-    return details[0][1] == 'ENGLISH' 
+def decrypt(cipher_text, key):
+    num_columns = len(key)
+    num_rows = -(-len(cipher_text) // num_columns)
+    sorted_key = sorted(range(num_columns), key=lambda x: key[x])
+    
+    # Calculate the number of characters in the last row
+    last_row_length = len(cipher_text) % num_columns
+    
+    plain_text = ''
+    for row in range(num_rows):
+        for col in sorted_key:
+            # Calculate the index of the character in the cipher text
+            index = col * num_rows + row
+            # Check if the index is within the length of the cipher text
+            if index < len(cipher_text):
+                plain_text += cipher_text[index]
+            # If we are in the last row and there are empty spaces,
+            # add them to the plain text
+            elif row == num_rows - 1 and col >= num_columns - last_row_length:
+                plain_text += ' '
+    
+    return plain_text
 
-def encrypt(plaintext, key, keep_spaces=False):
-    """Encrypts plaintext using a columnar transposition cipher with a given key."""
-    if not keep_spaces:
-        plaintext = plaintext.replace(" ", "") 
+def is_english_word(word):
+    return word.lower() in set(nltk.corpus.words.words())
 
-    ciphertext = [''] * len(key)  
-    col = 0
-    for char in plaintext:
-        ciphertext[col] += char
-        col = (col + 1) % len(key) 
-
-    return ''.join(ciphertext)
-
-def decrypt(ciphertext, key, keep_spaces=False):
-    """Decrypts a columnar transposition cipher using a specific key."""
-    order = sorted(range(len(key)), key=lambda k: key[k])
-    numRows = len(ciphertext) // len(key) # Integer division for base rows 
-    numCols = len(key)
-    numRowsPerCol = [numRows] * numCols  
-
-    extra = len(ciphertext) % numCols  
-    for i in range(extra): 
-        numRowsPerCol[i] += 1  # Dis
-
-    col = 0
-    decoded = [''] * len(ciphertext)  # Create decoded list to match ciphertext length
-    for index in range(len(ciphertext)):  
-        row = index // numRowsPerCol[col]  
-        pos = order[col] * numRowsPerCol[col] + row  
-        print(f"index: {index}, col: {col}, row: {row}, pos: {pos}, len(decoded): {len(decoded)}") # Add this line
-        decoded[pos] = ciphertext[index]  
-        col = (col + 1) % numCols  
-
-    return ''.join(decoded)
-
-def calculate_score(text):
-    """Calculates a score reflecting how likely 'text' is English using word frequencies."""
-    score = 0
-    for word in text.split():
-        if word.lower() in ENGLISH_WORDS:
-            score += len(word)  
-    return score
-
-def crack(ciphertext):
-    """Tries to crack a columnar transposition cipher using brute force and English scoring."""
-    potential_solutions = []
-    for keyLength in range(1, len(ciphertext) + 1):
-        if keyLength > 1:
-            for key in permutations(range(keyLength)):
-                    # Decrypt with the current key
-                    plaintext = decrypt(ciphertext, keyLength)
-                    score = calculate_score(plaintext) 
-                    potential_solutions.append((plaintext, keyLength, score)) 
-        else:
-            plaintext = decrypt(ciphertext, keyLength)
-            score = calculate_score(plaintext) 
-            potential_solutions.append((plaintext, keyLength, score)) 
-
-    if potential_solutions:
-        return sorted(potential_solutions, key=lambda x: x[2], reverse = True)[0]
-    else:
-        return None 
+def crack_cipher(cipher_text):
+    for key_length in range(1, len(string.ascii_lowercase) + 1):
+        possible_keys = permutations(string.ascii_lowercase, key_length)
+        for key in possible_keys:
+            key = ''.join(key)
+            decrypted_text = decrypt(cipher_text, key)
+            if all(word in nltk.corpus.words.words() for word in decrypted_text.split()):
+                return key, decrypted_text
+    return None, None
 
 def main():
-    while True:
-        choice = input("Choose an option (e/d/c):\n"
-                       "  e: Encrypt\n"
-                       "  d: Decrypt\n"
-                       "  c: Crack\n"
-                       "  q: Quit\n"
-                       "Enter your choice: ").lower()
-
-        if choice == 'e':
-            plaintext = input("Enter plaintext: ")
-            key = input("Enter key: ")  
-            ciphertext = encrypt(plaintext, key)
-            print("Ciphertext:", ciphertext)
-
-        elif choice == 'd':
-            ciphertext = input("Enter ciphertext: ")
-            key = input("Enter key: ")  
-            plaintext = decrypt(ciphertext, key)
-            print("Plaintext:", plaintext)
-
-        elif choice == 'c':
-            ciphertext = input("Enter ciphertext: ")
-            result, key, score = crack(ciphertext)
-            if result:
-                print("Most likely decrypted text:", result)
-                print("Key (Key Length):", key)
-                print("Score:", score)
-            else:
-                print("Unable to crack the cipher.")
-
-        elif choice == 'q':
-            break
+    choice = input("Enter 'encrypt', 'decrypt', or 'crack': ").strip().lower()
+    if choice == 'encrypt':
+        plain_text = input("Enter the plain text: ").strip()
+        key = input("Enter the key: ").strip()
+        cipher_text = encrypt(plain_text, key)
+        print("Encrypted text:", cipher_text)
+    elif choice == 'decrypt':
+        cipher_text = input("Enter the cipher text: ").strip()
+        key = input("Enter the key: ").strip()
+        plain_text = decrypt(cipher_text, key)
+        print("Decrypted text:", plain_text)
+    elif choice == 'crack':
+        cipher_text = input("Enter the cipher text: ").strip()
+        cracked_key, cracked_text = crack_cipher(cipher_text)
+        if cracked_key:
+            print("Cracked key:", cracked_key)
+            print("Cracked text:", cracked_text)
         else:
-            print("Invalid choice.")
+            print("Failed to crack the cipher.")
+    else:
+        print("Invalid choice.")
 
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
