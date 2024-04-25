@@ -3,7 +3,8 @@ import time
 import affineCipher  # Import your other cipher modules similarly
 import shiftCipher
 import RailFenceCipher
-# import columnartranspositioncCipher still failing when importing "no module pycld2"
+# still failing when importing "no module pycld2"
+import columnartranspositioncCipher
 import playfairCipher
 import affineCipher
 import vigenereCipher
@@ -79,8 +80,7 @@ def main():
             RailFenceCipher.main()
 
         elif choice == 4:
-            # columnartranspositioncCipher.main()
-            print("Columnar Transposition Cipher is not yet implemented.")
+            columnartranspositioncCipher.main()
 
         elif choice == 5:
             affineCipher.main()
