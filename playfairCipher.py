@@ -6,8 +6,6 @@ import string
 nltk.download('words')
 
 
-
-
 list1 = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'k', 'l', 'm',
          'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
@@ -16,6 +14,8 @@ def is_english_word(word):
     return word.lower() in set(nltk.corpus.words.words())
 
 # Function to convert the string to lowercase
+
+
 def toLowerCase(text):
     return text.lower()
 
@@ -27,6 +27,8 @@ def removeSpaces(text):
     return ''.join(text.split())
 
 # Function to group 2 elements of a string as a list element
+
+
 def Diagraph(text):
     Diagraph = []
     group = 0
@@ -37,6 +39,8 @@ def Diagraph(text):
     return Diagraph
 
 # Function to fill a letter in a string element If 2 letters in the same string matches
+
+
 def FillerLetter(text):
     k = len(text)
     if k % 2 == 0:
@@ -56,6 +60,7 @@ def FillerLetter(text):
             else:
                 new_word = text
     return new_word
+
 
 def generateKeyTable(key, list1):
     key_letters = []
@@ -78,11 +83,13 @@ def generateKeyTable(key, list1):
 
     return matrix
 
+
 def search(mat, element):
     for i in range(5):
         for j in range(5):
-            if(mat[i][j] == element):
+            if (mat[i][j] == element):
                 return i, j
+
 
 def encrypt_RowRule(matr, e1r, e1c, e2r, e2c):
     char1 = ''
@@ -99,6 +106,7 @@ def encrypt_RowRule(matr, e1r, e1c, e2r, e2c):
 
     return char1, char2
 
+
 def encrypt_ColumnRule(matr, e1r, e1c, e2r, e2c):
     char1 = ''
     if e1r == 4:
@@ -114,6 +122,7 @@ def encrypt_ColumnRule(matr, e1r, e1c, e2r, e2c):
 
     return char1, char2
 
+
 def encrypt_RectangleRule(matr, e1r, e1c, e2r, e2c):
     char1 = ''
     char1 = matr[e1r][e2c]
@@ -122,6 +131,7 @@ def encrypt_RectangleRule(matr, e1r, e1c, e2r, e2c):
     char2 = matr[e2r][e1c]
 
     return char1, char2
+
 
 def encryptByPlayfairCipher(Matrix, plainList):
     CipherText = []
@@ -136,11 +146,13 @@ def encryptByPlayfairCipher(Matrix, plainList):
         elif ele1_y == ele2_y:
             c1, c2 = encrypt_ColumnRule(Matrix, ele1_x, ele1_y, ele2_x, ele2_y)
         else:
-            c1, c2 = encrypt_RectangleRule(Matrix, ele1_x, ele1_y, ele2_x, ele2_y)
+            c1, c2 = encrypt_RectangleRule(
+                Matrix, ele1_x, ele1_y, ele2_x, ele2_y)
 
         cipher = c1 + c2
         CipherText.append(cipher)
     return CipherText
+
 
 def decrypt(str, keyT):
     ps = len(str)
@@ -149,13 +161,16 @@ def decrypt(str, keyT):
         a = search(keyT, str[i])
         b = search(keyT, str[i + 1])
         if a[0] == b[0]:
-            str = str[:i] + keyT[a[0]][mod5(a[1]-1)] + keyT[b[0]][mod5(b[1]-1)] + str[i+2:]
+            str = str[:i] + keyT[a[0]
+                                 ][mod5(a[1]-1)] + keyT[b[0]][mod5(b[1]-1)] + str[i+2:]
         elif a[1] == b[1]:
-            str = str[:i] + keyT[mod5(a[0]-1)][a[1]] + keyT[mod5(b[0]-1)][b[1]] + str[i+2:]
+            str = str[:i] + keyT[mod5(a[0]-1)][a[1]] + \
+                keyT[mod5(b[0]-1)][b[1]] + str[i+2:]
         else:
             str = str[:i] + keyT[a[0]][b[1]] + keyT[b[0]][a[1]] + str[i+2:]
         i += 2
     return str
+
 
 def decryptByPlayfairCipher(str, key):
     ks = len(key)
@@ -163,9 +178,9 @@ def decryptByPlayfairCipher(str, key):
     str = removeSpaces(toLowerCase(str))
     keyT = generateKeyTable(key, list1)
     decrypted_text = decrypt(str, keyT)
-    decrypted_text = decrypted_text.replace('x', '')  # Remove any 'x' characters
+    decrypted_text = decrypted_text.replace(
+        'x', '')  # Remove any 'x' characters
     return decrypted_text
-
 
 
 def mod5(a):
@@ -173,12 +188,14 @@ def mod5(a):
         a += 5
     return a % 5
 
+
 def bruteForceCrack(cipher_text):
     for key in list1:
         key = removeSpaces(toLowerCase(key))
         keyT = generateKeyTable(key, list1)
         decrypted_text = decrypt(cipher_text, keyT)
-        decrypted_text = decrypted_text.replace('x', '')  # Remove any 'x' characters
+        decrypted_text = decrypted_text.replace(
+            'x', '')  # Remove any 'x' characters
         words = decrypted_text.split()
         if all(is_english_word(word) for word in words):
             print(f"Key: {key}, Deciphered text: {decrypted_text}")
@@ -187,15 +204,14 @@ def bruteForceCrack(cipher_text):
         print("Failed to crack: No English words found in decrypted text")
 
 
-
-if __name__ == "__main__":
+def main():
     while True:
-        print("Menu:")
+        print("\nMenu:")
         print("1. Encrypt")
         print("2. Decrypt")
         print("3. Crack")
         print("4. Exit")
-        
+
         choice = input("Enter your choice: ")
 
         if choice == '1':
@@ -225,3 +241,7 @@ if __name__ == "__main__":
             break
         else:
             print("Invalid choice. Please enter a number between 1 and 4.")
+
+
+if __name__ == "__main__":
+    main()
