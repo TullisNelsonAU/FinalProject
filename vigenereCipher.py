@@ -25,7 +25,7 @@ def vigenere_cipher(plain_text, keyword, mode):
                len(keyword) + 1))[:len(plain_text)]
 
     for i in range(len(plain_text)):
-        plain_char = plain_text[i]
+        plain_char = plain_text[i].lower()
         keyword_char = keyword[i % len(keyword)]
 
         if plain_char.isalpha():
@@ -80,8 +80,11 @@ def brute_force(ciphertext):
                 best_decryption = decryption
                 best_decryption_score = score
                 key_used = possible_key
+            if best_decryption_score == 1:
+                return best_decryption, key_used
 
     print("Key used: ", key_used)
+    print("best decryption score: ", best_decryption_score)
     return best_decryption
 
 
@@ -98,6 +101,8 @@ def brute_force2(ciphertext):
                 best_decryption = decryption
                 best_decryption_score = score
                 key_used = possible_key
+            if best_decryption_score == 1:
+                return best_decryption, key_used
 
     return best_decryption, key_used
 
